@@ -52,7 +52,7 @@ async function main() {
             where: {
                 username: msg.chat.username
             },
-            update: {
+            data: {
                 lastMessage: '/orario'
             }
         })
