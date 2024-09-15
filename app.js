@@ -48,6 +48,14 @@ async function main() {
         day = day.toLocaleDateString().replace(new RegExp('/', 'g'), '-');
 
         const orari = await getOrari(day, msg.chat.username);
+        await prisma.user.update({
+            where: {
+                username: msg.chat.username
+            },
+            update: {
+                lastMessage: '/orario'
+            }
+        })
         telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
     })
 
@@ -58,18 +66,6 @@ async function main() {
                     username: msg.chat.username
                 }
             });
-
-            if (user.lastMessage === '/start') {
-                const params = msg.text.split(' ');
-                await prisma.course.create({
-                    data: {
-                        userId: user.id,
-                        corso: params[0],
-                        anno2: params[1],
-                        scuola: params[2]
-                    }
-                });
-            }
 
             await prisma.user.update({
                 where: {
