@@ -27,7 +27,7 @@ async function main() {
                 }
             });
             
-            telegramBot.sendMessage(`Hello ${msg.chat.username}`, msg.chat.id);
+            telegramBot.sendMessage(`Ciao ${msg.chat.name} inserisci corso anno2[] `, msg.chat.id);
         }
         catch(err){
             console.log('Creation User Error', err);
