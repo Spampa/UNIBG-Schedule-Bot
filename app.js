@@ -22,7 +22,8 @@ async function main() {
                     chat: msg.chat.id,
                     lastMessage: '/start',
                     corso: '21-270',
-                    anno2: 'PDS0-2012|1'
+                    anno2: 'PDS0-2012|1',
+                    scuola: 'ScuoladiIngegneria'
                 }
             });
             

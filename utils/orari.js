@@ -10,6 +10,8 @@ export const getOrari = async (day, username) => {
             username
         }
     });
+    
+    if(!user) return undefined;
 
     const formData = new FormData();
     const date = day;

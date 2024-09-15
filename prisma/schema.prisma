@@ -17,4 +17,5 @@ model User {
   time        DateTime @default(now())
   corso       String
   anno2       String
+  scuola      String
 }
