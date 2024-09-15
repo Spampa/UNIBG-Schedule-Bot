@@ -79,10 +79,16 @@ export default class TelegramBot {
         }
 
         this.deleteMessage = async (chatId, messageId) => {
-            await axios.post(`${BASE_URL}/deleteMessage`, {
-                chat_id: chatId,
-                message_id: messageId
-            });
+            try{
+                await axios.post(`${BASE_URL}/deleteMessage`, {
+                    chat_id: chatId,
+                    message_id: messageId
+                });
+            }
+            catch(err){
+                console.log("Errore nell' eliminazione", err);
+            }
+
         }
     }
 }
