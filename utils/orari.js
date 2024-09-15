@@ -8,6 +8,9 @@ export const getOrari = async (day, username) => {
     const user = await prisma.user.findUnique({
         where: {
             username
+        },
+        select: {
+            course: true
         }
     });
     
@@ -20,12 +23,12 @@ export const getOrari = async (day, username) => {
     formData.append('form-type', 'corso');
     formData.append('include', 'corso');
     formData.append('anno', '2024');
-    formData.append('scuola', 'ScuoladiIngegneria');
-    formData.append('corso', user.corso);
+    formData.append('scuola', user.course.scuola);
+    formData.append('corso', user.course.courseId);
     formData.append('date', date);
     formData.append('_lang', 'it');
     formData.append('txtcurr', '1 - PERCORSO COMUNE');
-    formData.append('anno2[]', user.anno2); //2014
+    formData.append('anno2[]', user.course.anno2); //2014
     formData.append('visualizzazione_orario', 'cal');
 
     const orario = [];

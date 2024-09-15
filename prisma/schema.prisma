@@ -11,11 +11,19 @@ datasource db {
 }
 
 model User {
-  username    String   @id
+  username    String   @unique
   chat        BigInt   @unique
   lastMessage String
   time        DateTime @default(now())
-  corso       String
-  anno2       String
-  scuola      String
+  course      Course?  @relation(fields: [courseId], references: [courseId])
+  courseId    String?
+}
+
+model Course {
+  courseId String @id
+  name     String
+  anno     Int
+  anno2    String
+  scuola   String
+  User     User[]
 }

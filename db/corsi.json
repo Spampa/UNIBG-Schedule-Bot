@@ -1,0 +1,16 @@
+[
+    {
+        "courseId": "21-270",
+        "name": "Ingegneria Informatica",
+        "anno": 1,
+        "anno2": "PDS0-2012|1",
+        "scuola": "ScuoladiIngegneria"
+    },
+    {
+        "courseId": "23-270",
+        "name": "Ingegneria Meccanica",
+        "anno": 2,
+        "anno2": "PDS0-2014|1",
+        "scuola": "ScuoladiIngegneria"
+    }
+]
