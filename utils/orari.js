@@ -3,8 +3,7 @@ import axios from "axios";
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-export const getOrari = async (day, username) => {
-
+export const getOrari = async (day, username, week = false) => {
     const user = await prisma.user.findUnique({
         where: {
             username
@@ -17,7 +16,11 @@ export const getOrari = async (day, username) => {
     if(!user) return undefined;
 
     const formData = new FormData();
-    const date = day;
+    let date = day.split('/');
+    
+    date[1].length === 1 ? date[1] = '0' + date[1] : date[1];
+    date = `${date[0]}-${date[1]}-${date[2]}`;
+
     //init form data
     formData.append('view', 'easycourse');
     formData.append('form-type', 'corso');
@@ -35,12 +38,13 @@ export const getOrari = async (day, username) => {
     const data = (await axios.post('https://logistica.unibg.it/PortaleStudenti/grid_call.php', formData)).data;
 
     for (const subject of data.celle) {
-        if(subject.data === date && subject.Annullato === '0'){
+        if((week || subject.data === date) && subject.Annullato === '0'){
             orario.push({
                 subject: subject.nome_insegnamento,
                 date: subject.data,
                 schedule: subject.orario,
                 classroom: subject.aula,
+                data: subject.data,
             });
         }
     }

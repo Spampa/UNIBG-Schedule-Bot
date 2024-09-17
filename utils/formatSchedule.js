@@ -1,18 +1,22 @@
 export const formatSchedule = (schedule, day) => {
-    if(schedule === undefined){
+    if (schedule === undefined) {
         return '⚠️ Riesegui /start';
     }
-    let msg = `Orari del ${day}\n`;
-    if(schedule.length === 0){
+    if (schedule.length === 0) {
         msg += '😴 Oggi Nessuna Lezione';
     }
-    else{
-
+    else {
+        let currentDate = schedule[0].data;
+        let msg = `Orari del ${currentDate}\n`;
         schedule.forEach(s => {
             msg += `📗${s.subject}\n`
             msg += `🕛 ${s.schedule}\n`
             msg += `🏫 ${s.classroom}\n`
-            msg += `\n`
+            if (s.data !== currentDate) {
+                msg += `\nOrari del ${s.data}`;
+                currentDate = s.data;
+            }
+            msg += '\n';
         });
         return msg;
     }

@@ -42,10 +42,10 @@ async function main() {
         }
     })
 
-    telegramBot.onText('/orario', async (msg) => {
+    telegramBot.onText('/oggi', async (msg) => {
         let day = new Date();
-        day.setDate(day.getDate() + 1);
-        day = day.toLocaleDateString().replace(new RegExp('/', 'g'), '-');
+        day.setDate(day.getDate());
+        day = day.toLocaleDateString();
 
         const orari = await getOrari(day, msg.chat.username);
         await prisma.user.update({
@@ -53,7 +53,41 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
-                lastMessage: '/orario'
+                lastMessage: '/oggi'
+            }
+        })
+        telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
+    })
+
+    telegramBot.onText('/domani', async (msg) => {
+        let day = new Date();
+        day.setDate(day.getDate() + 1);
+        day = day.toLocaleDateString();
+
+        const orari = await getOrari(day, msg.chat.username);
+        await prisma.user.update({
+            where: {
+                username: msg.chat.username
+            },
+            data: {
+                lastMessage: '/domani'
+            }
+        })
+        telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
+    })
+
+    telegramBot.onText('/week', async (msg) => {
+        let day = new Date();
+        day.setDate(day.getDate());
+        day = day.toLocaleDateString();
+
+        const orari = await getOrari(day, msg.chat.username, true);
+        await prisma.user.update({
+            where: {
+                username: msg.chat.username
+            },
+            data: {
+                lastMessage: '/week'
             }
         })
         telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
