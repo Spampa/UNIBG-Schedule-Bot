@@ -54,7 +54,8 @@ export default class TelegramBot {
             setInterval(async () => {
                 updates.forEach((update, index) => {
                     if ((update.callback_query && update.callback_query.data.includes(callbackCode))) {
-                        callback(update.callback_query.data.replace(callbackCode + ' ', ''), update.callback_query);
+                        const data = update.callback_query.data.replace(callbackCode + ' ', '').split(':')
+                        callback(data, update.callback_query);
                         updates.splice(index, 1);
                     }
                 });

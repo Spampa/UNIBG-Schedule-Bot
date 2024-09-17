@@ -1,30 +1,78 @@
 import { PrismaClient } from '@prisma/client';
+import axios from 'axios';
 import fs from 'fs'
 
 const prisma = new PrismaClient();
 
 export const initDB = async () => {
-    const corsi = JSON.parse(fs.readFileSync('./db/corsi.json'));
 
-    corsi.forEach(async (c) => {
-        await prisma.course.upsert({
+    const data = await (await axios.get('https://logistica.unibg.it/PortaleStudenti/combo.php?sw=ec_&aa=2024&page=corsi')).data
+
+    const corsi = JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
+    const scuole = JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
+
+    scuole.forEach(async (s) => {
+        await prisma.school.upsert({
             where: {
-                courseId: c.courseId
+                schoolId: s.valore
             },
             update: {
-                courseId: c.courseId,
-                name: c.name,
-                anno: c.anno,
-                anno2: c.anno2,
-                scuola: c.scuola
+                name: s.label,
             },
             create: {
-                courseId: c.courseId,
-                name: c.name,
-                anno: c.anno,
-                anno2: c.anno2,
-                scuola: c.scuola
+                name: s.label,
+                schoolId: s.valore
             }
-        })
+        });
+    });
+
+
+    corsi.forEach(async (c) => {
+
+        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE") {
+            const anni = c.elenco_anni;
+            let i = c.tipo === 'Laurea' ? 1 : 4;
+            anni.forEach(async (a) => {
+
+                const obj = {
+                    courseId: c.valore,
+                    name: c.label,
+                    anno: i,
+                    annoId: a.valore,
+                    school: {
+                        connect: {
+                            schoolId: c.scuola // Assicurati che `c.scuolaId` sia l'ID corretto della scuola
+                        }
+                    }
+                };
+
+                i++;
+
+                await prisma.course.upsert({
+                    where: {
+                        courseId_annoId: {
+                            courseId: obj.courseId,
+                            annoId: obj.annoId
+                        }
+                    },
+                    update: {
+                        courseId: obj.courseId,
+                        name: obj.name,
+                        anno: obj.anno,
+                        annoId: obj.annoId,
+                        school: obj.school
+                    },
+                    create: {
+                        courseId: obj.courseId,
+                        name: obj.name,
+                        anno: obj.anno,
+                        annoId: obj.annoId,
+                        school: obj.school
+                    }
+                });
+            })
+        }
     })
+
+
 }

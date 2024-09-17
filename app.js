@@ -25,21 +25,15 @@ async function main() {
                     chat: msg.chat.id,
                     lastMessage: '/start',
                 }
+            });
+
+            const corsi = await prisma.course.findMany();
+            const buttons = [];
+            corsi.forEach(c => {
+                buttons.push([{text: `${c.name} - Anno ${c.anno}`, callback_data: `initCourse ${c.courseId}:${c.annoId}`}]);
             })
-            telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua facoltà`, msg.chat.id, [
-                [{
-                    text: 'Ingegneria Informatica - Anno 1',
-                    callback_data: 'initCourse 21-270'
-                }],
-                [{
-                    text: 'Ingegneria Meccanica - Anno 1',
-                    callback_data: 'initCourse 23-270'
-                }],
-                [{
-                    text: 'Ingegneria Gestionale - Anno 1',
-                    callback_data: 'initCourse 22-270'
-                }]
-            ]);
+
+            telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua facoltà`, msg.chat.id, buttons);
         }
         catch (err) {
             console.log('Creation User Error', err);
@@ -128,7 +122,8 @@ async function main() {
                     username: callback.message.chat.username
                 },
                 data: {
-                    courseId: data
+                    courseId: data[0],
+                    annoId: data[1]
                 }
             })
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);

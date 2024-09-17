@@ -15,15 +15,25 @@ model User {
   chat        BigInt   @unique
   lastMessage String
   time        DateTime @default(now())
-  course      Course?  @relation(fields: [courseId], references: [courseId])
+  course      Course?  @relation(fields: [courseId, annoId], references: [courseId, annoId])
   courseId    String?
+  annoId      String?
+}
+
+model School {
+  schoolId String   @id
+  name     String
+  Course   Course[]
 }
 
 model Course {
-  courseId String @id
+  courseId String
+  annoId   String
   name     String
   anno     Int
-  anno2    String
-  scuola   String
+  school   School @relation(fields: [schoolId], references: [schoolId])
+  schoolId String
   User     User[]
+
+  @@id([courseId, annoId])
 }
