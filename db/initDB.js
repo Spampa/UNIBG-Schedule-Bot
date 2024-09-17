@@ -11,7 +11,13 @@ export const initDB = async () => {
             where: {
                 courseId: c.courseId
             },
-            update: {},
+            update: {
+                courseId: c.courseId,
+                name: c.name,
+                anno: c.anno,
+                anno2: c.anno2,
+                scuola: c.scuola
+            },
             create: {
                 courseId: c.courseId,
                 name: c.name,

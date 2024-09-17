@@ -9,8 +9,15 @@
     {
         "courseId": "23-270",
         "name": "Ingegneria Meccanica",
-        "anno": 2,
+        "anno": 1,
         "anno2": "PDS0-2014|1",
+        "scuola": "ScuoladiIngegneria"
+    },
+    {
+        "courseId": "22-270",
+        "name": "Ingegneria Gestionale",
+        "anno": 1,
+        "anno2": "COMUNE|1",
         "scuola": "ScuoladiIngegneria"
     }
 ]

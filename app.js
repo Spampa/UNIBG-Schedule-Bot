@@ -27,14 +27,18 @@ async function main() {
                 }
             })
             telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua facoltà`, msg.chat.id, [
-                {
+                [{
                     text: 'Ingegneria Informatica - Anno 1',
                     callback_data: 'initCourse 21-270'
-                },
-                {
+                }],
+                [{
                     text: 'Ingegneria Meccanica - Anno 1',
                     callback_data: 'initCourse 23-270'
-                }
+                }],
+                [{
+                    text: 'Ingegneria Gestionale - Anno 1',
+                    callback_data: 'initCourse 22-270'
+                }]
             ]);
         }
         catch (err) {

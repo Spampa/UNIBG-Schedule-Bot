@@ -67,7 +67,7 @@ export default class TelegramBot {
                     text,
                     chat_id: chatId,
                     reply_markup: {
-                        inline_keyboard: [buttonOptions], // Pulsanti in colonna
+                        inline_keyboard: buttonOptions, // Pulsanti in colonna
                         one_time_keyboard: true,  // La tastiera scompare dopo l'uso
                         resize_keyboard: true
                     }
