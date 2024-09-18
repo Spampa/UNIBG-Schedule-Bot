@@ -28,7 +28,7 @@ export const initDB = async () => {
 
     corsi.forEach(async (c) => {
 
-        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE") {
+        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "MEDIA E CULTURA") {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
             anni.forEach(async (a) => {
