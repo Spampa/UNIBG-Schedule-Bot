@@ -11,7 +11,7 @@ export const initDB = async () => {
     const corsi = JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
     const scuole = JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
 
-    scuole.forEach(async (s) => {
+    for(const s of scuole){
         await prisma.school.upsert({
             where: {
                 schoolId: s.valore
@@ -24,8 +24,7 @@ export const initDB = async () => {
                 schoolId: s.valore
             }
         });
-    });
-
+    }
 
     corsi.forEach(async (c) => {
 
