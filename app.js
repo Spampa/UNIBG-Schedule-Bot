@@ -105,7 +105,29 @@ async function main() {
             }
         })
         telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
-    })
+    });
+
+    telegramBot.onText('/nextweek', async (msg) => {
+        const isLogged = await checkUser(msg.chat.username);
+        if(!isLogged){
+            return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
+        }
+        
+        let day = new Date();
+        day.setDate(day.getDate() + 7);
+        day = day.toLocaleDateString();
+
+        const orari = await getOrari(day, msg.chat.username, true);
+        await prisma.user.update({
+            where: {
+                username: msg.chat.username
+            },
+            data: {
+                lastMessage: '/nextweek'
+            }
+        })
+        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
+    });
 
     telegramBot.onText('*', async (msg) => {
         try {
