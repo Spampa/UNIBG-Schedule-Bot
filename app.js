@@ -54,7 +54,7 @@ async function main() {
                 lastMessage: '/oggi'
             }
         })
-        telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
+        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
     })
 
     telegramBot.onText('/domani', async (msg) => {
@@ -71,7 +71,7 @@ async function main() {
                 lastMessage: '/domani'
             }
         })
-        telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
+        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
     })
 
     telegramBot.onText('/week', async (msg) => {
@@ -88,7 +88,7 @@ async function main() {
                 lastMessage: '/week'
             }
         })
-        telegramBot.sendMessage(formatSchedule(orari, day), msg.chat.id);
+        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
     })
 
     telegramBot.onText('*', async (msg) => {

@@ -64,7 +64,7 @@ export default class TelegramBot {
 
         this.sendMessage = async (text, chatId, buttonOptions = []) => {
             try {
-                await axios.post(`${BASE_URL}/sendMessage`, {
+                await axios.post(`${BASE_URL}/sendMessage?parse_mode=html`, {
                     text,
                     chat_id: chatId,
                     reply_markup: {
