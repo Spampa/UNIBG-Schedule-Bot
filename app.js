@@ -14,6 +14,20 @@ async function main() {
 
     telegramBot.onText('/start', async (msg) => {
         try {
+            await prisma.user.upsert({
+                where: {
+                    username: msg.chat.username
+                },
+                update: {
+                    lastMessage: '/start'
+                },
+                create: {
+                    username: msg.chat.username,
+                    chat: msg.chat.id,
+                    lastMessage: '/start',
+                }
+            });
+
             const corsi = await prisma.course.findMany();
             const buttons = [];
             corsi.forEach(c => {
