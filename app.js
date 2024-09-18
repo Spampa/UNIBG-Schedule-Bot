@@ -13,6 +13,9 @@ async function main() {
     await initDB();
 
     telegramBot.onText('/start', async (msg) => {
+        if(!msg.chat.username){
+            return telegramBot.sendMessage(`⚠️Imposta uno username`, msg.chat.id);
+        }
         try {
             await prisma.user.upsert({
                 where: {
@@ -28,13 +31,13 @@ async function main() {
                 }
             });
 
-            const corsi = await prisma.course.findMany();
+            const schools = await prisma.school.findMany();
             const buttons = [];
-            corsi.forEach(c => {
-                buttons.push([{text: `${c.name} - Anno ${c.anno}`, callback_data: `initCourse ${c.courseId}:${c.annoId}`}]);
+            schools.forEach(s => {
+                buttons.push([{text: `${s.name}`, callback_data: `initSchool ${s.schoolId}`}]);
             })
 
-            telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua facoltà`, msg.chat.id, buttons);
+            telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua scuola`, msg.chat.id, buttons);
         }
         catch (err) {
             console.log('Creation User Error', err);
@@ -153,7 +156,53 @@ async function main() {
         }
     });
 
+    telegramBot.onCallBack('initSchool', async (data, callback) => {
+        try{
+            const course = await prisma.course.groupBy({
+                by: ['name'],
+                where: {
+                    schoolId: data[0]
+                }
+            });
+
+            const buttons = [];
+            course.forEach(c => {
+                buttons.push([{text: `${c.name}`, callback_data: `initCourse ${c.name}`}]);
+            })
+            telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
+            telegramBot.sendMessage(`📑 Seleziona la tua facoltà`, callback.message.chat.id, buttons);
+        }
+        catch(err){
+            console.log('Errore nella creazione corso', err);
+        }
+    });
+
     telegramBot.onCallBack('initCourse', async (data, callback) => {
+        try{
+            const course = await prisma.course.findMany({
+                where: {
+                    name: data[0]
+                },
+                orderBy: {
+                    anno: 'asc'
+                }
+
+            });
+
+            const buttons = [];
+            course.forEach(c => {
+                buttons.push([{text: `${c.anno}`, callback_data: `initYear ${c.courseId}:${c.annoId}`}]);
+            })
+            telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
+            telegramBot.sendMessage(`📑 Seleziona anno`, callback.message.chat.id, buttons);
+        }
+        catch(err){
+            console.log('Errore nella creazione corso', err);
+        }
+    });
+
+    telegramBot.onCallBack('initYear', async (data, callback) => {
+
         try{
             await prisma.user.update({
                 where: {

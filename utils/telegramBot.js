@@ -15,6 +15,7 @@ export default class TelegramBot {
                 const allUpdates = (await axios.get(`${BASE_URL}/getUpdates`, {
                     params: {
                         offset: offset,
+                        limit: 5
                     }
                 })).data.result;
                 updates = [];
@@ -36,7 +37,7 @@ export default class TelegramBot {
                 console.log('Polling error', err);
             }
 
-        }, 1000);
+        }, 1500);
 
         this.onText = (str, callback) => {
             const regex = str === '*' ? /.*/ : new RegExp(str);
