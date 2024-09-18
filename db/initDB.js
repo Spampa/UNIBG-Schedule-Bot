@@ -11,7 +11,7 @@ export const initDB = async () => {
     const corsi = JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
     const scuole = JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
 
-    for(const s of scuole){
+    for (const s of scuole) {
         await prisma.school.upsert({
             where: {
                 schoolId: s.valore
@@ -27,16 +27,16 @@ export const initDB = async () => {
     }
 
     corsi.forEach(async (c) => {
-
-        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "MEDIA E CULTURA") {
+        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE") {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
             anni.forEach(async (a) => {
-
+                let name = a.label;
+                name = name.includes('GENERALE') || name.includes('COMUNE') ? c.label : a.label.substring('x - '.length);
                 const obj = {
                     courseId: c.valore,
-                    name: c.label,
-                    anno: i,
+                    name: name,
+                    anno: c.tipo === 'Laurea Magistrale' ? parseInt(a.label[0]) + 3 : parseInt(a.label[0]),
                     annoId: a.valore,
                     school: {
                         connect: {
