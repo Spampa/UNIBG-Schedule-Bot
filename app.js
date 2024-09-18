@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { getOrari } from './utils/orari.js';
 import { initDB } from './db/initDB.js';
 import { formatSchedule } from './utils/formatSchedule.js';
+import { checkUser } from './middlewares/checkUser.js';
 import TelegramBot from './utils/telegramBot.js';
 
 const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
@@ -13,20 +14,6 @@ async function main() {
 
     telegramBot.onText('/start', async (msg) => {
         try {
-            await prisma.user.upsert({
-                where: {
-                    username: msg.chat.username
-                },
-                update: {
-                    lastMessage: '/start'
-                },
-                create: {
-                    username: msg.chat.username,
-                    chat: msg.chat.id,
-                    lastMessage: '/start',
-                }
-            });
-
             const corsi = await prisma.course.findMany();
             const buttons = [];
             corsi.forEach(c => {
@@ -41,6 +28,11 @@ async function main() {
     })
 
     telegramBot.onText('/oggi', async (msg) => {
+        const isLogged = await checkUser(msg.chat.username);
+        if(!isLogged){
+            return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
+        }
+
         let day = new Date();
         day.setDate(day.getDate());
         day = day.toLocaleDateString();
@@ -58,6 +50,11 @@ async function main() {
     })
 
     telegramBot.onText('/domani', async (msg) => {
+        const isLogged = await checkUser(msg.chat.username);
+        if(!isLogged){
+            return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
+        }
+
         let day = new Date();
         day.setDate(day.getDate() + 1);
         day = day.toLocaleDateString();
@@ -75,6 +72,11 @@ async function main() {
     })
 
     telegramBot.onText('/week', async (msg) => {
+        const isLogged = await checkUser(msg.chat.username);
+        if(!isLogged){
+            return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
+        }
+        
         let day = new Date();
         day.setDate(day.getDate());
         day = day.toLocaleDateString();

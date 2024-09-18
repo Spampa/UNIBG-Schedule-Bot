@@ -1,7 +1,7 @@
 export const formatSchedule = (schedule) => {
 
     if (schedule === undefined) {
-        return '⚠️ Riesegui /start';
+        return '⚠️ Riesegui /start corso non inizializzato correttamente';
     }
     else {
         let msg = '';

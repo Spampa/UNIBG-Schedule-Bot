@@ -19,7 +19,7 @@ export const getOrari = async (day, username, week = false) => {
         }
     });
     
-    if(!user) return undefined;
+    if( !user || !user.annoId || !user.courseId ) return undefined;
 
     const formData = new FormData();
     let date = day.split('/');
