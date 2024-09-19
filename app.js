@@ -4,7 +4,6 @@ import { getOrari } from './utils/orari.js';
 import { initDB } from './db/initDB.js';
 import { formatSchedule } from './utils/formatSchedule.js';
 import { checkUser } from './middlewares/checkUser.js';
-import { now } from './utils/now.js';
 import TelegramBot from './utils/telegramBot.js';
 
 const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
@@ -23,7 +22,7 @@ async function main() {
                     username: msg.chat.username
                 },
                 update: {
-                    time: now(),
+                    time: new Date().toISOString(),
                     lastMessage: '/start'
                 },
                 create: {
@@ -62,7 +61,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
-                time: now(),
+                time: new Date().toISOString(),
                 lastMessage: '/oggi'
             }
         })
@@ -85,7 +84,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
-                time: now(),
+                time: new Date().toISOString(),
                 lastMessage: '/domani'
             }
         })
@@ -108,7 +107,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
-                time: now(),
+                time: new Date().toISOString(),
                 lastMessage: '/week'
             }
         })
@@ -131,7 +130,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
-                time: now(),
+                time: new Date().toISOString(),
                 lastMessage: '/nextweek'
             }
         })
