@@ -37,7 +37,7 @@ export default class TelegramBot {
                 console.log('Polling error', err);
             }
 
-        }, process.env.NODE_ENV === 'production' ? 300 : 1000);
+        }, process.env.NODE_ENV === 'production' ? 500 : 1000);
 
         this.onText = (str, callback) => {
             const regex = str === '*' ? /.*/ : new RegExp(str);
