@@ -1,4 +1,4 @@
-# University Schedule Bot
+# UNIBG Schedule Bot
 
 Questo progetto è un bot sviluppato in Node.js che fornisce gli orari delle lezioni e degli esami dell'università. Il bot interagisce con gli utenti per fornire informazioni in tempo reale sui corsi, le aule e gli orari di lezione.
 
