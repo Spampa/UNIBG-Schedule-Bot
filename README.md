@@ -60,6 +60,12 @@ npm start
 
 Il bot inizierà ad ascoltare i messaggi e fornirà le informazioni richieste dagli utenti.
 
+##Roadmap
+Ecco alcune delle funzionalità future e miglioramenti pianificati:
+
+- **Miglioramento delle notifiche:** Aggiunta di notifiche per ritardi, cambi di aula e cancellazioni di lezioni.
+- **Integrazione con il calendario personale:** Permettere agli utenti di sincronizzare gli orari con Google Calendar o altri calendari personali.
+
 ## Contribuire
 
 Se vuoi contribuire a questo progetto:
