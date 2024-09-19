@@ -8,7 +8,7 @@ Questo progetto è un bot sviluppato in Node.js che fornisce gli orari delle lez
 
 ## Link Bot:
 
-[Bot Telegram](https://github.com/Spampa/UNIBG-Schedule-Bot.git)
+[Bot Telegram](https://t.me/orari_unibg_bot)
 
 ## Requisiti
 
@@ -22,7 +22,7 @@ Segui questi passaggi per configurare il progetto in localeç
 1. Clona il repository:
 
    ```bash
-   git clone https://github.com/Spampa/orariUniBG.git
+   git clone https://github.com/Spampa/UNIBG-Schedule-Bot.git
    ```
 
 2. Entra nella directory del progetto:
