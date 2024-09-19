@@ -28,24 +28,42 @@ export const initDB = async () => {
         if ((process.env.NODE_ENV === 'production') || (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE")) {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
-            anni.forEach(async (a) => {
-                if(c.valore === "CIS" || c.valore === "CINT") return;
+            for(const a of anni){
+                if (c.valore === "CIS" || c.valore === "CINT") return;
 
-                let name = a.label;
-                name = name.includes('GENERALE') || name.includes('COMUNE') ? c.label : a.label.substring('x - '.length);
                 const obj = {
                     courseId: c.valore,
-                    name: name,
                     anno: c.tipo === 'Laurea Magistrale' ? parseInt(a.label[0]) + 3 : parseInt(a.label[0]),
                     annoId: a.valore,
-                    school: {
-                        connect: {
-                            schoolId: c.scuola // Assicurati che `c.scuolaId` sia l'ID corretto della scuola
-                        }
-                    }
                 };
 
                 i++;
+
+                let name = a.label;
+                name = name.includes('GENERALE') || name.includes('COMUNE') ? c.label : a.label.substring('x - '.length);
+
+
+                const department = await prisma.department.upsert({
+                    where: {
+                        name
+                    },
+                    update: {
+                        school: {
+                            connect: {
+                                schoolId: c.scuola // Assicurati che `c.scuolaId` sia l'ID corretto della scuola
+                            }
+                        }
+                    },
+                    create: {
+                        name,
+                        school: {
+                            connect: {
+                                schoolId: c.scuola // Assicurati che `c.scuolaId` sia l'ID corretto della scuola
+                            }
+                        }
+                    }
+                });
+
 
                 await prisma.course.upsert({
                     where: {
@@ -56,20 +74,27 @@ export const initDB = async () => {
                     },
                     update: {
                         courseId: obj.courseId,
-                        name: obj.name,
-                        anno: obj.anno,
                         annoId: obj.annoId,
-                        school: obj.school
+                        anno: obj.anno,
+                        department: {
+                            connect: {
+                                departmentId: department.departmentId
+                            }
+                        }
+
                     },
                     create: {
                         courseId: obj.courseId,
-                        name: obj.name,
-                        anno: obj.anno,
                         annoId: obj.annoId,
-                        school: obj.school
+                        anno: obj.anno,
+                        department: {
+                            connect: {
+                                departmentId: department.departmentId
+                            }
+                        }
                     }
                 });
-            })
+            }
         }
     })
 

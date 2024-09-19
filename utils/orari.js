@@ -13,12 +13,16 @@ export const getOrari = async (day, username, week = false) => {
             annoId: true,
             course: {
                 select: {
-                    school: true
+                    department: {
+                        select: {
+                            schoolId: true
+                        }
+                    }
                 }
             }
         }
     });
-    
+        
     if( !user || !user.annoId || !user.courseId ) return undefined;
 
     const formData = new FormData();
@@ -32,7 +36,7 @@ export const getOrari = async (day, username, week = false) => {
     formData.append('form-type', 'corso');
     formData.append('include', 'corso');
     formData.append('anno', '2024');
-    formData.append('scuola', user.course.school.schoolId);
+    formData.append('scuola', user.course.department.schoolId);
     formData.append('corso', user.courseId);
     formData.append('date', date);
     formData.append('_lang', 'it');

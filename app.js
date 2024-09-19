@@ -34,7 +34,7 @@ async function main() {
             const schools = await prisma.school.findMany();
             const buttons = [];
             schools.forEach(s => {
-                buttons.push([{text: `${s.name}`, callback_data: `iS${s.schoolId}`}]);
+                buttons.push([{text: `${s.name}`, callback_data: `initSchool${s.schoolId}`}]);
             })
 
             telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua scuola`, msg.chat.id, buttons);
@@ -156,18 +156,17 @@ async function main() {
         }
     });
 
-    telegramBot.onCallBack('iS', async (data, callback) => {
+    telegramBot.onCallBack('initSchool', async (data, callback) => {
         try{
-            const course = await prisma.course.groupBy({
-                by: ['name'],
+            const department = await prisma.department.findMany({
                 where: {
                     schoolId: data[0]
                 }
-            });
+            })
 
             const buttons = [];
-            course.forEach(c => {
-                buttons.push([{text: `${c.name}`, callback_data: `iC${c.name}`}]);
+            department.forEach(d => {
+                buttons.push([{text: `${d.name}`, callback_data: `initCourse${d.departmentId}`}]);
             })
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage(`📑 Seleziona la tua facoltà`, callback.message.chat.id, buttons);
@@ -177,21 +176,20 @@ async function main() {
         }
     });
 
-    telegramBot.onCallBack('iC', async (data, callback) => {
+    telegramBot.onCallBack('initCourse', async (data, callback) => {
         try{
             const course = await prisma.course.findMany({
                 where: {
-                    name: data[0]
+                    departmentId: parseInt(data[0])
                 },
                 orderBy: {
                     anno: 'asc'
                 }
-
             });
 
             const buttons = [];
             course.forEach(c => {
-                buttons.push([{text: `${c.anno}`, callback_data: `iY${c.courseId}:${c.annoId}`}]);
+                buttons.push([{text: `${c.anno}`, callback_data: `initYear${c.courseId}:${c.annoId}`}]);
             })
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage(`📑 Seleziona anno`, callback.message.chat.id, buttons);
@@ -201,7 +199,7 @@ async function main() {
         }
     });
 
-    telegramBot.onCallBack('iY', async (data, callback) => {
+    telegramBot.onCallBack('initYear', async (data, callback) => {
 
         try{
             await prisma.user.update({

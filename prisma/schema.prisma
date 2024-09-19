@@ -21,19 +21,28 @@ model User {
 }
 
 model School {
-  schoolId String   @id
-  name     String
-  Course   Course[]
+  schoolId   String       @id
+  name       String
+  Department Department[]
+}
+
+model Department {
+  departmentId Int      @id @default(autoincrement())
+  name         String   @unique
+  school       School   @relation(fields: [schoolId], references: [schoolId])
+  schoolId     String
+  Course       Course[]
 }
 
 model Course {
   courseId String
   annoId   String
-  name     String
   anno     Int
-  school   School @relation(fields: [schoolId], references: [schoolId])
-  schoolId String
-  User     User[]
+
+  department   Department @relation(fields: [departmentId], references: [departmentId])
+  departmentId Int
+  
+  User         User[]
 
   @@id([courseId, annoId])
 }
