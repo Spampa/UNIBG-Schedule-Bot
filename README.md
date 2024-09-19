@@ -60,7 +60,7 @@ npm start
 
 Il bot inizierà ad ascoltare i messaggi e fornirà le informazioni richieste dagli utenti.
 
-##Roadmap
+## Roadmap
 Ecco alcune delle funzionalità future e miglioramenti pianificati:
 
 - **Miglioramento delle notifiche:** Aggiunta di notifiche per ritardi, cambi di aula e cancellazioni di lezioni.
