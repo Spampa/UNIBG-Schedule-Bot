@@ -22,6 +22,7 @@ async function main() {
                     username: msg.chat.username
                 },
                 update: {
+                    time: Date.now(),
                     lastMessage: '/start'
                 },
                 create: {
@@ -60,6 +61,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
+                time: Date.now(),
                 lastMessage: '/oggi'
             }
         })
@@ -82,6 +84,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
+                time: Date.now(),
                 lastMessage: '/domani'
             }
         })
@@ -104,6 +107,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
+                time: Date.now(),
                 lastMessage: '/week'
             }
         })
@@ -126,6 +130,7 @@ async function main() {
                 username: msg.chat.username
             },
             data: {
+                time: Date.now(),
                 lastMessage: '/nextweek'
             }
         })
@@ -145,6 +150,7 @@ async function main() {
                     username: msg.chat.username
                 },
                 data: {
+                    time: Date.now(),
                     lastMessage: msg.text
                 }
             })
