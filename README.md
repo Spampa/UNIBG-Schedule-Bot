@@ -22,7 +22,7 @@ Segui questi passaggi per configurare il progetto in localeç
 1. Clona il repository:
 
    ```bash
-   git clone https://github.com/tuo-username/university-schedule-bot.git
+   git clone https://github.com/Spampa/orariUniBG.git
    ```
 
 2. Entra nella directory del progetto:
@@ -40,8 +40,9 @@ Segui questi passaggi per configurare il progetto in localeç
 4. Configura le variabili d'ambiente: crea un file `.env` e aggiungi le seguenti variabili:
 
    ```plaintext
-   BOT_TOKEN=your-bot-token
-   API_URL=your-university-api-url
+   TELEGRAM_TOKEN=your-bot-token
+   DATABASE_URL=mysql://USER:PASSWORD@HOST:PORT/DATABASE
+   NODE_ENV= # Imposta 'development' per sviluppo, 'production' per produzione
    ```
 5. Inizializza il database:
 
