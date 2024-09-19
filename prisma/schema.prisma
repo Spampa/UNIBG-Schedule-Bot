@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  username    String   @unique
+  username    String   @id
   chat        BigInt   @unique
   lastMessage String
   time        DateTime @default(now())

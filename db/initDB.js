@@ -1,11 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
-import fs from 'fs'
 
 const prisma = new PrismaClient();
 
 export const initDB = async () => {
-
     const data = await (await axios.get('https://logistica.unibg.it/PortaleStudenti/combo.php?sw=ec_&aa=2024&page=corsi')).data
 
     const corsi = JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
@@ -27,10 +25,12 @@ export const initDB = async () => {
     }
 
     corsi.forEach(async (c) => {
-        if (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE") {
+        if ((process.env.NODE_ENV === 'production') || (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE")) {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
             anni.forEach(async (a) => {
+                if(c.valore === "CIS" || c.valore === "CINT") return;
+
                 let name = a.label;
                 name = name.includes('GENERALE') || name.includes('COMUNE') ? c.label : a.label.substring('x - '.length);
                 const obj = {
