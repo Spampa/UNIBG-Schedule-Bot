@@ -8,7 +8,7 @@ Questo progetto è un bot sviluppato in Node.js che fornisce gli orari delle lez
 
 ## Link Bot:
 
-Bot Telegram: https://t.me/orari_unibg_bot
+[Bot Telegram](https://github.com/Spampa/UNIBG-Schedule-Bot.git)
 
 ## Requisiti
 
