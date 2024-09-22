@@ -5,6 +5,7 @@ Questo progetto è un bot sviluppato in Node.js che fornisce gli orari delle lez
 ## Funzionalità
 
 - **Consultazione orari:** Fornisce gli orari delle lezioni, delle sessioni di laboratorio e degli esami.
+- **Notifiche:** Notifiche cambi di aula e cancellazioni di lezioni.
 
 ## Link Bot:
 
@@ -43,6 +44,7 @@ Segui questi passaggi per configurare il progetto in localeç
    TELEGRAM_TOKEN=your-bot-token
    DATABASE_URL=mysql://USER:PASSWORD@HOST:PORT/DATABASE
    NODE_ENV= # Imposta 'development' per sviluppo, 'production' per produzione
+   MAX_WEEKS=4 #imposta valore intero per il numero massimo di settimane da salvare nel db
    ```
 5. Inizializza il database:
 
@@ -63,7 +65,6 @@ Il bot inizierà ad ascoltare i messaggi e fornirà le informazioni richieste da
 ## Roadmap
 Ecco alcune delle funzionalità future e miglioramenti pianificati:
 
-- **Miglioramento delle notifiche:** Aggiunta di notifiche per ritardi, cambi di aula e cancellazioni di lezioni.
 - **Integrazione con il calendario personale:** Permettere agli utenti di sincronizzare gli orari con Google Calendar o altri calendari personali.
 
 ## Contribuire
