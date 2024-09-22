@@ -7,5 +7,6 @@ export const checkUser = async (username) => {
             username
         }
     });
-    return user ? true : false;
+
+    return user.annoId && user.courseId ? true : false;
 }
