@@ -1,19 +1,29 @@
-import 'dotenv'
+import fs from 'fs'
+
 import { PrismaClient } from '@prisma/client';
-import { getOrari } from './utils/orari.js';
 import { initDB } from './db/initDB.js';
 import { formatSchedule } from './utils/formatSchedule.js';
 import { checkUser } from './middlewares/checkUser.js';
-import TelegramBot from './utils/telegramBot.js';
+import { jobSchedules } from './job/jobSchedules.js'
+import { formatDate } from './utils/formatDate.js';
+import { notifyAll } from './utils/notifyAll.js';
 
+import TelegramBot from './utils/telegramBot.js';
 const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
+
 const prisma = new PrismaClient();
 
 async function main() {
     await initDB();
 
+    if(process.env.NODE_ENV === 'production'){
+        notifyAll(telegramBot, fs.readFileSync('./update.txt', 'utf8'));
+    }
+
+    jobSchedules(telegramBot); //start schedule for update the schedule of the school
+
     telegramBot.onText('/start', async (msg) => {
-        if(!msg.chat.username){
+        if (!msg.chat.username) {
             return telegramBot.sendMessage(`⚠️Imposta uno username`, msg.chat.id);
         }
         try {
@@ -35,7 +45,7 @@ async function main() {
             const schools = await prisma.school.findMany();
             const buttons = [];
             schools.forEach(s => {
-                buttons.push([{text: `${s.name}`, callback_data: `initSchool${s.schoolId}`}]);
+                buttons.push([{ text: `${s.name}`, callback_data: `initSchool${s.schoolId}` }]);
             })
 
             telegramBot.sendMessage(`Ciao ${msg.chat.first_name} seleziona la tua scuola`, msg.chat.id, buttons);
@@ -47,16 +57,13 @@ async function main() {
 
     telegramBot.onText('/oggi', async (msg) => {
         const isLogged = await checkUser(msg.chat.username);
-        if(!isLogged){
+        if (!isLogged) {
             return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
         }
 
-        let day = new Date();
-        day.setDate(day.getDate());
-        day = day.toLocaleDateString('it-IT');
+        const date = formatDate();
 
-        const orari = await getOrari(day, msg.chat.username);
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 username: msg.chat.username
             },
@@ -64,22 +71,27 @@ async function main() {
                 time: new Date().toISOString(),
                 lastMessage: '/oggi'
             }
-        })
-        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
+        });
+
+        const schedule = await prisma.schedule.findMany({
+            where: {
+                courseId: user.courseId,
+                courseAnnoId: user.annoId,
+                date
+            }
+        });
+        telegramBot.sendMessage(formatSchedule(schedule), msg.chat.id);
     })
 
     telegramBot.onText('/domani', async (msg) => {
         const isLogged = await checkUser(msg.chat.username);
-        if(!isLogged){
+        if (!isLogged) {
             return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
         }
 
-        let day = new Date();
-        day.setDate(day.getDate() + 1);
-        day = day.toLocaleDateString('it-IT');
+        const date = formatDate(1);
 
-        const orari = await getOrari(day, msg.chat.username);
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 username: msg.chat.username
             },
@@ -87,22 +99,25 @@ async function main() {
                 time: new Date().toISOString(),
                 lastMessage: '/domani'
             }
-        })
-        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
+        });
+
+        const schedule = await prisma.schedule.findMany({
+            where: {
+                courseId: user.courseId,
+                courseAnnoId: user.annoId,
+                date
+            }
+        });
+        telegramBot.sendMessage(formatSchedule(schedule), msg.chat.id);
     })
 
     telegramBot.onText('/week', async (msg) => {
         const isLogged = await checkUser(msg.chat.username);
-        if(!isLogged){
+        if (!isLogged) {
             return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
         }
-        
-        let day = new Date();
-        day.setDate(day.getDate());
-        day = day.toLocaleDateString('it-IT');
 
-        const orari = await getOrari(day, msg.chat.username, true);
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 username: msg.chat.username
             },
@@ -110,22 +125,32 @@ async function main() {
                 time: new Date().toISOString(),
                 lastMessage: '/week'
             }
+        });
+
+        const minWeek = (await prisma.schedule.aggregate({
+            _min: {
+                week: true
+            }
+        }))._min.week;
+
+        const schedule = await prisma.schedule.findMany({
+            where: {
+                courseId: user.courseId,
+                courseAnnoId: user.annoId,
+                week: minWeek
+            }
         })
-        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
+
+        telegramBot.sendMessage(formatSchedule(schedule), msg.chat.id);
     });
 
     telegramBot.onText('/nextweek', async (msg) => {
         const isLogged = await checkUser(msg.chat.username);
-        if(!isLogged){
+        if (!isLogged) {
             return telegramBot.sendMessage('Utente non registrato esegui /start oppure imposta uno username', msg.chat.id);
         }
-        
-        let day = new Date();
-        day.setDate(day.getDate() + 7);
-        day = day.toLocaleDateString('it-IT');
 
-        const orari = await getOrari(day, msg.chat.username, true);
-        await prisma.user.update({
+        const user = await prisma.user.update({
             where: {
                 username: msg.chat.username
             },
@@ -134,7 +159,21 @@ async function main() {
                 lastMessage: '/nextweek'
             }
         })
-        telegramBot.sendMessage(formatSchedule(orari), msg.chat.id);
+
+        const nextWeek = (await prisma.schedule.aggregate({
+            _min: {
+                week: true
+            }
+        }))._min.week + 1;
+
+        const schedule = await prisma.schedule.findMany({
+            where: {
+                courseId: user.courseId,
+                courseAnnoId: user.annoId,
+                week: nextWeek
+            }
+        })
+        telegramBot.sendMessage(formatSchedule(schedule), msg.chat.id);
     });
 
     telegramBot.onText('*', async (msg) => {
@@ -150,7 +189,7 @@ async function main() {
                     username: msg.chat.username
                 },
                 data: {
-                    time: Date.now(),
+                    time: new Date().toISOString(),
                     lastMessage: msg.text
                 }
             })
@@ -163,7 +202,7 @@ async function main() {
     });
 
     telegramBot.onCallBack('initSchool', async (data, callback) => {
-        try{
+        try {
             const department = await prisma.department.findMany({
                 where: {
                     schoolId: data[0]
@@ -172,18 +211,18 @@ async function main() {
 
             const buttons = [];
             department.forEach(d => {
-                buttons.push([{text: `${d.name}`, callback_data: `initCourse${d.departmentId}`}]);
+                buttons.push([{ text: `${d.name}`, callback_data: `initCourse${d.departmentId}` }]);
             })
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage(`📑 Seleziona la tua facoltà`, callback.message.chat.id, buttons);
         }
-        catch(err){
+        catch (err) {
             console.log('Errore nella creazione corso', err);
         }
     });
 
     telegramBot.onCallBack('initCourse', async (data, callback) => {
-        try{
+        try {
             const course = await prisma.course.findMany({
                 where: {
                     departmentId: parseInt(data[0])
@@ -195,19 +234,19 @@ async function main() {
 
             const buttons = [];
             course.forEach(c => {
-                buttons.push([{text: `${c.anno}`, callback_data: `initYear${c.courseId}:${c.annoId}`}]);
+                buttons.push([{ text: `${c.anno}`, callback_data: `initYear${c.courseId}:${c.annoId}` }]);
             })
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage(`📑 Seleziona anno`, callback.message.chat.id, buttons);
         }
-        catch(err){
+        catch (err) {
             console.log('Errore nella creazione corso', err);
         }
     });
 
     telegramBot.onCallBack('initYear', async (data, callback) => {
 
-        try{
+        try {
             await prisma.user.update({
                 where: {
                     username: callback.message.chat.username
@@ -220,10 +259,20 @@ async function main() {
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage('✅ Corso configurato correttamente', callback.message.chat.id);
         }
-        catch(err){
+        catch (err) {
             console.log('Errore nella creazione corso', err);
         }
     });
 }
 
 main();
+
+process.on('SIGINT', async () => {
+    console.log('Chiusura in corso...');
+    await prisma.$disconnect();
+    console.log('Connessione al database chiusa.');
+    if(process.env.NODE_ENV === 'production'){
+        await notifyAll(telegramBot, '⚠️ Server Down per manutenzione, torniamo tra poco 😴');
+    }
+    process.exit(0);
+})

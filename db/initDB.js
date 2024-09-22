@@ -24,7 +24,7 @@ export const initDB = async () => {
         });
     }
 
-    corsi.forEach(async (c) => {
+    for(const c of corsi){
         if ((process.env.NODE_ENV === 'production') || (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE")) {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
@@ -96,7 +96,5 @@ export const initDB = async () => {
                 });
             }
         }
-    })
-
-
+    }
 }

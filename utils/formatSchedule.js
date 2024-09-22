@@ -9,16 +9,17 @@ export const formatSchedule = (schedule) => {
             msg += '😴 Oggi Nessuna Lezione';
         }
         else{
-            let currentDate = schedule[0].data;
+            let currentDate = schedule[0].date;
             msg += `<b><i>Orari del ${currentDate}</i></b>\n`;
             for(const s of schedule){
-                if (s.data !== currentDate) {
-                    msg += `<b><i>Orari del ${s.data}</i></b>\n`;
-                    currentDate = s.data;
+                if (s.date !== currentDate) {
+                    msg += `<b><i>Orari del ${s.date}</i></b>\n`;
+                    currentDate = s.date;
                 }
-                msg += `📗${s.subject}\n`
-                msg += `🕛 ${s.schedule}\n`
-                msg += `🏫 ${s.classroom}\n`
+                msg += `📗${s.subject}\n`;
+                msg += `🕛 ${s.time}\n`;
+                msg += `🏫 ${s.classroom}\n`;
+                msg += `🧑‍🏫 ${s.teacher}\n`;
                 msg += '\n';
             }
         }
