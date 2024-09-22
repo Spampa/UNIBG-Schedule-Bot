@@ -7,6 +7,7 @@ import { checkUser } from './middlewares/checkUser.js';
 import { jobSchedules } from './job/jobSchedules.js'
 import { formatDate } from './utils/formatDate.js';
 import { notifyAll } from './utils/notifyAll.js';
+import { updateSchedules } from './utils/schedule/updateSchedules.js';
 
 import TelegramBot from './utils/telegramBot.js';
 const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
@@ -247,7 +248,7 @@ async function main() {
     telegramBot.onCallBack('initYear', async (data, callback) => {
 
         try {
-            await prisma.user.update({
+            const user = await prisma.user.update({
                 where: {
                     username: callback.message.chat.username
                 },
@@ -255,7 +256,19 @@ async function main() {
                     courseId: data[0],
                     annoId: data[1]
                 }
-            })
+            });
+
+            const schedule = await prisma.schedule.findMany({
+                where: {
+                    courseId: user.courseId,
+                    courseAnnoId: user.annoId
+                }
+            });
+
+            if(schedule.length === 0){
+                updateSchedules();
+            }
+
             telegramBot.deleteMessage(callback.message.chat.id, callback.message.message_id);
             telegramBot.sendMessage('✅ Corso configurato correttamente', callback.message.chat.id);
         }
