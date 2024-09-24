@@ -12,6 +12,7 @@ export const formatSchedule = (schedule) => {
             let currentDate = schedule[0].date;
             msg += `<b><i>Orari del ${currentDate}</i></b>\n`;
             for(const s of schedule){
+                if(s.isCanceled) continue;
                 if (s.date !== currentDate) {
                     msg += `<b><i>Orari del ${s.date}</i></b>\n`;
                     currentDate = s.date;
