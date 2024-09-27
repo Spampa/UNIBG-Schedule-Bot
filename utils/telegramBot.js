@@ -10,6 +10,8 @@ export default class TelegramBot {
 
         let updates = [];
 
+        const intervalTime = process.env.NODE_ENV === 'production' ? 500 : 1000;
+
         setInterval(async () => {
             try {
                 const allUpdates = (await axios.get(`${BASE_URL}/getUpdates`, {
@@ -37,7 +39,7 @@ export default class TelegramBot {
                 console.log('Polling error', err);
             }
 
-        }, process.env.NODE_ENV === 'production' ? 500 : 1000);
+        }, intervalTime);
 
         this.onText = (str, callback) => {
             const regex = str === '*' ? /.*/ : new RegExp(str);
@@ -48,7 +50,7 @@ export default class TelegramBot {
                         updates.splice(index, 1);
                     }
                 });
-            }, 200);
+            }, intervalTime);
         };
 
         this.onCallBack = (callbackCode, callback) => {
@@ -60,7 +62,7 @@ export default class TelegramBot {
                         updates.splice(index, 1);
                     }
                 });
-            }, 200);
+            }, intervalTime);
         };
 
         this.sendMessage = async (text, chatId, buttonOptions = []) => {
@@ -90,7 +92,6 @@ export default class TelegramBot {
             catch(err){
                 console.log("Errore nell' eliminazione", err);
             }
-
         }
     }
 }
