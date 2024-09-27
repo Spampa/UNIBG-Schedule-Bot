@@ -1,4 +1,5 @@
 import fs from 'fs'
+import axios from 'axios';
 
 import { PrismaClient } from '@prisma/client';
 import { initDB } from './db/initDB.js';
@@ -10,14 +11,14 @@ import { notifyAll } from './utils/notifyAll.js';
 import { updateSchedules } from './utils/schedule/updateSchedules.js';
 
 import TelegramBot from './utils/telegramBot.js';
-const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
 
 const prisma = new PrismaClient();
+const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN);
 
 async function main() {
     await initDB();
 
-    if(process.env.NODE_ENV === 'production'){
+    if (process.env.NODE_ENV === 'production') {
         notifyAll(telegramBot, fs.readFileSync('./update.txt', 'utf8'));
     }
 
@@ -265,7 +266,7 @@ async function main() {
                 }
             });
 
-            if(schedule.length === 0){
+            if (schedule.length === 0) {
                 updateSchedules();
             }
 
@@ -284,8 +285,10 @@ process.on('SIGINT', async () => {
     console.log('Chiusura in corso...');
     await prisma.$disconnect();
     console.log('Connessione al database chiusa.');
-    if(process.env.NODE_ENV === 'production'){
+
+    if (process.env.NODE_ENV === 'production') {
         await notifyAll(telegramBot, '⚠️ Server Down per manutenzione, torniamo tra poco 😴');
     }
+
     process.exit(0);
 })

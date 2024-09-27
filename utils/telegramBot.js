@@ -14,15 +14,17 @@ export default class TelegramBot {
 
         setInterval(async () => {
             try {
-                const allUpdates = (await axios.get(`${BASE_URL}/getUpdates`, {
+                const res = (await axios.get(`${BASE_URL}/getUpdates`, {
                     params: {
                         offset: offset,
-                        limit: 5
+                        limit: 20
                     }
-                })).data.result;
+                }));
+                const allUpdates = res.data.result;
                 updates = [];
                 allUpdates.forEach(u => {
                     if (u.message?.date) {
+                        console.log(u.message.date);
                         if ((offset === null || u.update_id > offset) && u.message.date >= startTime) {
                             updates.push(u);
                         }
@@ -30,7 +32,7 @@ export default class TelegramBot {
                     else if ((offset === null || u.update_id > offset) && u.callback_query?.message?.date | 0 >= startTime) {
                         updates.push(u);
                     }
-                    offset = u.update_id;
+                    offset = u.update_id + 1;
                 });
 
                 return updates;
