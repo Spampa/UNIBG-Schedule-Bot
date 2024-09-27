@@ -33,7 +33,7 @@ export async function updateSchedules() {
 
         for (let i = parseInt(minWeek || 0); i < parseInt(minWeek || 0) + parseInt(process.env.MAX_WEEKS); i++) {
             for (const u of userCourses) {
-                const schedule = await fetchSchedule(formatDate( 7 * ((i % parseInt(minWeek || 0)) || i )), u.courseId, u.annoId, u.course.department.schoolId);
+                const schedule = await fetchSchedule(formatDate( 7 * ((i - parseInt(minWeek || 0)) || i )), u.courseId, u.annoId, u.course.department.schoolId);
                 for (const c of schedule) {
                     const oldSchedule = await prisma.schedule.findUnique({
                         where: {
