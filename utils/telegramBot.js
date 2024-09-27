@@ -3,45 +3,40 @@ import axios from "axios";
 export default class TelegramBot {
     constructor(token) {
         this.token = token;
-        let offset = null;
 
         const BASE_URL = `https://api.telegram.org/bot${token}`;
         const startTime = Math.floor(Date.now() / 1000);
 
         let updates = [];
+        let offset = null;
 
         const intervalTime = process.env.NODE_ENV === 'production' ? 500 : 1000;
 
-        setInterval(async () => {
-            try {
-                const res = (await axios.get(`${BASE_URL}/getUpdates`, {
-                    params: {
-                        offset: offset,
-                        limit: 20
-                    }
-                }));
+        async function getUpdates() {
+            await axios.get(`${BASE_URL}/getUpdates`, {
+                params: {
+                    offset: offset,
+                    limit: 20
+                }
+            }).then((res) => {
                 const allUpdates = res.data.result;
-                updates = [];
+                if (allUpdates.length === 0) return;
+
+                if (offset === null) {
+                    offset = allUpdates[allUpdates.length - 1].update_id + 1;
+                }
+
                 allUpdates.forEach(u => {
-                    if (u.message?.date) {
-                        console.log(u.message.date);
-                        if ((offset === null || u.update_id > offset) && u.message.date >= startTime) {
-                            updates.push(u);
-                        }
-                    }
-                    else if ((offset === null || u.update_id > offset) && u.callback_query?.message?.date | 0 >= startTime) {
-                        updates.push(u);
-                    }
+                    updates.push(u);
                     offset = u.update_id + 1;
                 });
+            })
+            .catch(err => {
+                console.log('Polling Error', err.response.data);
+            });
+        }
 
-                return updates;
-            }
-            catch (err) {
-                console.log('Polling error', err);
-            }
-
-        }, intervalTime);
+        setInterval(async () => await getUpdates(), intervalTime);
 
         this.onText = (str, callback) => {
             const regex = str === '*' ? /.*/ : new RegExp(str);
@@ -85,13 +80,13 @@ export default class TelegramBot {
         }
 
         this.deleteMessage = async (chatId, messageId) => {
-            try{
+            try {
                 await axios.post(`${BASE_URL}/deleteMessage`, {
                     chat_id: chatId,
                     message_id: messageId
                 });
             }
-            catch(err){
+            catch (err) {
                 console.log("Errore nell' eliminazione", err);
             }
         }
