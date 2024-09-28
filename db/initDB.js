@@ -28,7 +28,6 @@ export const initDB = async () => {
 
     for(const c of corsi){
         if(c.scuola === 'CIS-CorsidiItalianoperStranieri') continue;
-        console.log(i++, c);
         if ((process.env.NODE_ENV === 'production') || (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE")) {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
