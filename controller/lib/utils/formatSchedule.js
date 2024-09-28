@@ -1,12 +1,11 @@
-export const formatSchedule = (schedule) => {
-
+export function formatSchedule(schedule) {
     if (schedule === undefined) {
         return '⚠️ Riesegui /start corso non inizializzato correttamente';
     }
     else {
         let msg = '';
         if (schedule.length === 0) {
-            msg += '😴 Oggi Nessuna Lezione';
+            msg += '😴 Nessuna lezione trovata';
         }
         else{
             let currentDate = schedule[0].date;
@@ -18,7 +17,7 @@ export const formatSchedule = (schedule) => {
                     currentDate = s.date;
                 }
                 msg += `📗${s.subject}\n`;
-                msg += `🕛 ${s.time}\n`;
+                msg += `🕛 ${s.start} - ${s.end}\n`;
                 msg += `🏫 ${s.classroom}\n`;
                 msg += `🧑‍🏫 ${s.teacher}\n`;
                 msg += '\n';

@@ -1,22 +1,28 @@
 import cron from 'node-cron'
 
-import { updateSchedules } from '../utils/schedule/updateSchedules.js';
-import { notifyScheduleChanges } from '../utils/schedule/notifySchedule.js';
-import { deleteOldWeek } from '../utils/schedule/deleteOldWeek.js';
+import { updateSchedules } from './lib/updateSchedules.js';
+import { notifyOnly } from '../controller/index.js';
+import { deleteOldWeek } from './lib/deleteOldWeek.js';
 
-export function jobSchedules(bot) {
+export function jobSchedules() {
     cron.schedule('0 * * * *', async () => {
-        const updates = await updateSchedules();
-        updates.forEach(u => {
-            let msg = ''
-            if(u.isCanceled){
-                msg = `⚠️ ${u.subject}\ndel <b>${u.date}</b>\nè stata cancellata➖`
-            }
-            else{
-                msg = `⚠️ ${u.subject}\ndel <b>${u.date}</b>\nè stata aggiunta all'orario➕`
-            }
-            notifyScheduleChanges(bot, msg, u.courseId, u.courseAnnoId);
-        })
+        try{
+            const updates = await updateSchedules();
+            updates.forEach(u => {
+                let msg = ''
+                if(u.isCanceled){
+                    msg = `⚠️ ${u.subject}\ndel <b>${u.date}</b>\nè stata cancellata➖`
+                }
+                else{
+                    msg = `⚠️ ${u.subject}\ndel <b>${u.date}</b>\nè stata aggiunta all'orario➕`
+                }
+                notifyOnly(msg, u.courseId, u.courseAnnoId);
+            })
+        }
+        catch(err){
+            console.log("Errore nell'aggiornamento", err);
+        }
+
     });
 
     //delete old week

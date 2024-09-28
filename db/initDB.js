@@ -10,18 +10,20 @@ export const initDB = async () => {
     const scuole = JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
 
     for (const s of scuole) {
-        await prisma.school.upsert({
-            where: {
-                schoolId: s.valore
-            },
-            update: {
-                name: s.label,
-            },
-            create: {
-                name: s.label,
-                schoolId: s.valore
-            }
-        });
+        if(s.valore !== "CIS-CorsidiItalianoperStranieri"){
+            await prisma.school.upsert({
+                where: {
+                    schoolId: s.valore
+                },
+                update: {
+                    name: s.label,
+                },
+                create: {
+                    name: s.label,
+                    schoolId: s.valore
+                }
+            });
+        }
     }
 
     for(const c of corsi){
