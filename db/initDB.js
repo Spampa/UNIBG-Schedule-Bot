@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 export const initDB = async () => {
     const data = await (await axios.get('https://logistica.unibg.it/PortaleStudenti/combo.php?sw=ec_&aa=2024&page=corsi')).data
 
-    const corsi = JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
-    const scuole = JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
+    const corsi = await JSON.parse(data.substring('var elenco_corsi = '.length, data.indexOf(';')));
+    const scuole = await JSON.parse(data.substring(data.indexOf('var elenco_scuole = ') + 'var elenco_scuole = '.length, data.indexOf(';', data.indexOf('var elenco_scuole = '))));
 
     for (const s of scuole) {
         if(s.valore !== "CIS-CorsidiItalianoperStranieri"){
@@ -27,6 +27,7 @@ export const initDB = async () => {
     }
 
     for(const c of corsi){
+        if(c.scuola === 'CIS-CorsidiItalianoperStranieri') continue;
         if ((process.env.NODE_ENV === 'production') || (c.label === "INGEGNERIA INFORMATICA" || c.label === "INGEGNERIA MECCANICA" || c.label === "INGEGNERIA GESTIONALE" || c.label === "SCIENZE DELLA COMUNICAZIONE")) {
             const anni = c.elenco_anni;
             let i = c.tipo === 'Laurea' ? 1 : 4;
