@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { fetchSchedule } from '../../services/fetchSchedule.js';
-import { formatDate } from '../formatDate.js';
+import { fetchSchedule } from '../services/fetchSchedule.js';
+import { formatDate } from '../../controller/lib/utils/formatDate.js';
 
 const prisma = new PrismaClient();
 

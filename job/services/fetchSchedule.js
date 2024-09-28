@@ -28,12 +28,12 @@ export async function fetchSchedule(date, courseId, annoId, schoolId) {
             courseAnnoId: annoId,
             subject: subject.nome_insegnamento,
             date: subject.data,
-            time: subject.orario,
+            start: subject.ora_inizio,
+            end:  subject.ora_fine,
             classroom: subject.aula,
             teacher: subject.docente,
             isCanceled: subject.Annullato === '1' ? true : false
         });
-        
     }
 
     return schedule;

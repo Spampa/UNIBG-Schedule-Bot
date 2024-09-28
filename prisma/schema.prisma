@@ -56,12 +56,13 @@ model Schedule {
   courseId     String
   courseAnnoId String
   date         String
-  time         String
+  start        String
+  end          String
 
   classroom  String
   teacher    String
   isCanceled Boolean
   week       Int
 
-  @@unique([subject, courseId, courseAnnoId, date, time])
+  @@unique([subject, courseId, courseAnnoId, date, start, end])
 }
