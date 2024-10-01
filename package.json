@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx prisma db push && node app.js",
-    "pulldb": "npx prisma db pull && node app.js"
+    "start": "npx prisma db push && node app.js"
   },
   "keywords": [],
   "author": "",
