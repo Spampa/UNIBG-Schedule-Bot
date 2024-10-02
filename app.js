@@ -69,3 +69,8 @@ app.post('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on 127.0.0.1:${port}`);
 });
+
+process.on('SIGINT', async () => {
+    await prisma.$disconnect();
+    process.exit();
+  });

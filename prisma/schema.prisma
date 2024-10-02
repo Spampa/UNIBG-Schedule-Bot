@@ -57,7 +57,9 @@ model Schedule {
   courseAnnoId String
   date         String
   start        String
+  startMinutes Int
   end          String
+  endMinutes   Int
 
   classroom  String
   teacher    String

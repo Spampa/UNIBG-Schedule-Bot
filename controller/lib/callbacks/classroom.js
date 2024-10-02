@@ -1,27 +1,26 @@
 
 import { formatDate } from '../utils/formatDate.js';
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 export async function classroom(classroom) {
-    const now = new Date();
-    const formattedTime = now.toLocaleString('it-IT', { timeZone: 'Europe/Rome' });
-    const date = formattedTime.substring(0, formattedTime.indexOf(","));
-    const hour = formattedTime.substring(formattedTime.indexOf(" ") + 1);
+    const formattedTime = new Date().toLocaleString('it-IT', { timeZone: 'Europe/Rome' });
+    const date = formatDate();
+    const [hour, minutes] = formattedTime.substring(formattedTime.indexOf(" ")).split(":");
 
+    console.log(date, hour);
     const findClass = await prisma.schedule.findFirst({
         where: {
             date: date,
             classroom,
             AND: [
                 {
-                    start: {
-                        lte: hour
-                    }
-                },
-                {
-                    end: {
-                        gte: hour
+                    startMinutes: {
+                        lte: parseInt(hour * 60 + minutes)
+                    },
+                    endMinutes: {
+                        gte: parseInt(hour * 60 + minutes)
                     }
                 }
             ]
