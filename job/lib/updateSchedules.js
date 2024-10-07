@@ -9,8 +9,8 @@ export async function updateSchedules() {
         const updates = [];
 
         let courses = [];
-        
-        if(process.env.NODE_ENV === 'production'){
+
+        if (process.env.NODE_ENV === 'production') {
             courses = await prisma.course.findMany({
                 select: {
                     courseId: true,
@@ -23,7 +23,7 @@ export async function updateSchedules() {
                 }
             });
         }
-        else{
+        else {
             const userCourses = await prisma.user.findMany({
                 distinct: ['annoId', 'courseId'],
                 select: {
@@ -32,7 +32,7 @@ export async function updateSchedules() {
                 }
             });
 
-            for(const u of userCourses){
+            for (const u of userCourses) {
                 courses.push(
                     await prisma.course.findUnique({
                         where: {
@@ -63,8 +63,9 @@ export async function updateSchedules() {
 
         for (let i = parseInt(minWeek || 0); i < parseInt(minWeek || 0) + parseInt(process.env.MAX_WEEKS); i++) {
             for (const c of courses) {
-                const schedule = await fetchSchedule(formatDate( 7 * (i - parseInt(minWeek || 0))), c.courseId, c.annoId, c.department.schoolId);
+                const schedule = await fetchSchedule(formatDate(7 * (i - parseInt(minWeek || 0))), c.courseId, c.annoId, c.department.schoolId);
                 for (const s of schedule) {
+                    if (!s.subject) continue;
                     const oldSchedule = await prisma.schedule.findUnique({
                         where: {
                             subject_courseId_courseAnnoId_date_start_end: {
@@ -77,7 +78,7 @@ export async function updateSchedules() {
                             }
                         }
                     });
-                    
+
                     const newSchedule = await prisma.schedule.upsert({
                         where: {
                             subject_courseId_courseAnnoId_date_start_end: {
@@ -109,13 +110,14 @@ export async function updateSchedules() {
                             week: i
                         }
                     });
-                    
+
                     if (JSON.stringify(oldSchedule) !== JSON.stringify(newSchedule)) {
-                        if(oldSchedule) updates.push(newSchedule);
+                        if (oldSchedule) updates.push(newSchedule);
                     }
                 }
             };
         }
+        console.log(updates);
         return updates;
     }
     catch (err) {
