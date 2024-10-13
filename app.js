@@ -4,6 +4,7 @@ config();
 import express from 'express';
 import axios from 'axios';
 import fs from 'fs';
+import crypto from 'crypto';
 
 import { initDB } from './db/initDB.js';
 import { jobSchedules } from './job/jobSchedules.js';
@@ -16,12 +17,14 @@ app.use(express.json());
 const port = process.env.PORT
 
 let myUrl = process.env.SERVER_URL;
+const appToken = crypto.randomBytes(16).toString('hex');
 
 //init fase
 try {
     //create new webhook
     const res = await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/setWebhook`, {
-        url: myUrl
+        url: myUrl,
+        secret_token: appToken
     });
     console.log('- ' + res.data.description);
 
@@ -50,6 +53,18 @@ app.use((req, res, next) => {
     next();
 })
 
+//check if the request is from telegram bot
+app.use((req, res, next) => {
+    if (req?.headers["x-telegram-bot-api-secret-token"] === appToken) {
+        next();
+    }
+    else {
+        res.status(401).json({
+            message: "Not Authorized"
+        });
+    }
+});
+
 //check if user has username
 app.use((req, res, next) => {
     if (req.body.message && !req.body.message.chat.username) {
@@ -73,4 +88,4 @@ app.listen(port, () => {
 process.on('SIGINT', async () => {
     await prisma.$disconnect();
     process.exit();
-  });
+});

@@ -117,7 +117,6 @@ export async function updateSchedules() {
                 }
             };
         }
-        console.log(updates);
         return updates;
     }
     catch (err) {
