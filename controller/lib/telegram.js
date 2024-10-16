@@ -18,11 +18,15 @@ export async function sendMessage(chatId, text, buttons = []) {
         }
     }).catch(async err => {
         if(err.status === 403){
-            await prisma.user.update({
+            await prisma.user.upsert({
                 where: {
                     chat: chatId
                 },
-                data: {
+                update: {
+                    isBanned: true
+                },
+                create: {
+                    chat: chatId,
                     isBanned: true
                 }
             });
