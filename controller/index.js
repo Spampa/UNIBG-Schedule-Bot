@@ -9,7 +9,7 @@ export async function handler(req) {
 
         if (body && body.message) {
             const messageObj = body.message;
-
+            console.log(`Message from ${messageObj.chat.id} ${messageObj.chat?.username} text: ${messageObj.text}`);
             let user = await prisma.user.findUnique({
                 where: {
                     chat: messageObj.chat.id
