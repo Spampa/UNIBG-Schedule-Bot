@@ -12,14 +12,14 @@ export async function handler(req) {
 
             let user = await prisma.user.findUnique({
                 where: {
-                    username: messageObj.chat.username
+                    chat: messageObj.chat.id
                 }
             });
 
             if (user && messageObj.text === '/start') {
                 user = await prisma.user.update({
                     where: {
-                        username: messageObj.chat.username
+                        chat: messageObj.chat.id
                     },
                     data: {
                         isBanned: false
