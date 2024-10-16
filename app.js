@@ -35,13 +35,6 @@ try {
     //get schedule
     jobSchedules();
     console.log('- Schedule Started');
-
-    //notify all users of the update
-    const updateText = fs.readFileSync('./update.txt', 'utf-8');
-    if (updateText !== '' && process.env.NODE_ENV === 'production') {
-        notifyAll(updateText);
-        console.log('- Ended to notify Users');
-    }
 }
 catch (err) {
     console.log(err);

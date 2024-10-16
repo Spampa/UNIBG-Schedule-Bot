@@ -4,25 +4,46 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function handler(req) {
-    try{
+    try {
         const { body } = req;
-        if(body && body.message){
+
+        if (body && body.message) {
             const messageObj = body.message;
 
-            const user = await prisma.user.findUnique({
+            let user = await prisma.user.findUnique({
                 where: {
                     username: messageObj.chat.username
                 }
             });
 
-            await handleMessage(messageObj, user);
+            if (user && messageObj.text === '/start') {
+                user = await prisma.user.update({
+                    where: {
+                        username: messageObj.chat.username
+                    },
+                    data: {
+                        isBanned: false
+                    }
+                });
+            }
+
+            if (!user?.isBanned) {
+                await handleMessage(messageObj, user);
+            }
         }
-        else if(body && body.callback_query){
+        else if (body && body.callback_query) {
             const callbackObj = body.callback_query;
-            handleCallbackMessage(callbackObj);
+            const user = await prisma.user.findUnique({
+                where: {
+                    username: callbackObj.from.username
+                }
+            });
+            if (!user.isBanned) {
+                handleCallbackMessage(callbackObj);
+            }
         }
     }
-    catch(err){
+    catch (err) {
         console.log(err);
     }
 }
@@ -30,7 +51,9 @@ export async function handler(req) {
 export async function notifyAll(msg) {
     const users = await prisma.user.findMany();
     users.forEach(u => {
-        sendMessage(u.chat.toString(), msg);
+        if (!u.isBanned) {
+            sendMessage(u.chat.toString(), msg);
+        }
     });
 }
 
@@ -46,6 +69,8 @@ export async function notifyOnly(msg, courseId, annoId) {
     });
 
     users.forEach(u => {
-        sendMessage(u.chat.toString(), msg);
-    })
+        if (!u.isBanned) {
+            sendMessage(u.chat.toString(), msg);
+        }
+    });
 }

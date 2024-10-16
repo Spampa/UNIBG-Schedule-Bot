@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  username    String   @id
-  chat        BigInt   @unique
+  chat     BigInt  @id
+  username String? @unique
+
   lastMessage String
   time        DateTime @default(now())
   course      Course?  @relation(fields: [courseId, annoId], references: [courseId, annoId])
   courseId    String?
   annoId      String?
+
+  isBanned Boolean @default(false)
 }
 
 model School {

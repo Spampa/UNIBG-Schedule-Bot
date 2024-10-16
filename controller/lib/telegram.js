@@ -16,8 +16,21 @@ export async function sendMessage(chatId, text, buttons = []) {
             one_time_keyboard: true,  // La tastiera scompare dopo l'uso
             resize_keyboard: true
         }
-    }).catch(err => {
-        console.log('Error to send message: ', err);
+    }).catch(async err => {
+        if(err.status === 403){
+            await prisma.user.update({
+                where: {
+                    chat: chatId
+                },
+                data: {
+                    isBanned: true
+                }
+            });
+            console.log(`User with chat id ${chatId} is banned`);
+        }
+        else{
+            console.log('Error to send message: ', err);
+        }
     })
 }
 

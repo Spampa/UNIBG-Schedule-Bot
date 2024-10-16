@@ -7,19 +7,11 @@ export async function year(data, callbackObj) {
     const username = callbackObj.from.username;
 
     try{
-        await prisma.user.upsert({
+        await prisma.user.update({
             where: {
                 username
             },
-            update: {
-                courseId,
-                annoId,
-                time: new Date().toISOString()
-            },
-            create: {
-                username,
-                chat: callbackObj.from.id,
-                lastMessage: '/start',
+            data: {
                 courseId,
                 annoId
             }
