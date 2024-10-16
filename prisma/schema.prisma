@@ -14,7 +14,7 @@ model User {
   chat     BigInt  @id
   username String? @unique
 
-  lastMessage String
+  lastMessage String?
   time        DateTime @default(now())
   course      Course?  @relation(fields: [courseId, annoId], references: [courseId, annoId])
   courseId    String?

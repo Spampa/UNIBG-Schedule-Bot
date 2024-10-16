@@ -27,7 +27,8 @@ export async function sendMessage(chatId, text, buttons = []) {
                 },
                 create: {
                     chat: chatId,
-                    isBanned: true
+                    isBanned: true,
+                    time: new Date().toISOString()
                 }
             });
             console.log(`User with chat id ${chatId} is banned`);
