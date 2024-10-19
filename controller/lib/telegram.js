@@ -3,6 +3,8 @@ import { handleCommand } from "./command.js";
 import { handleCallback } from "./callback.js";
 
 import { PrismaClient } from '@prisma/client';
+import { logger } from "../../utils/logger.js";
+
 const prisma = new PrismaClient();
 
 const BASE_URL = `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}`;
@@ -31,10 +33,10 @@ export async function sendMessage(chatId, text, buttons = []) {
                     time: new Date().toISOString()
                 }
             });
-            console.log(`User with chat id ${chatId} is banned`);
+            logger.info(`User with chat id ${chatId} is banned`);
         }
         else{
-            console.log('Error to send message: ', err);
+            logger.warn('Error to send message: ', err);
         }
     })
 }
@@ -45,21 +47,20 @@ async function deleteMessage(chatId, messageId) {
         message_id: messageId
     })
     .catch(err => {
-        console.log('Deleting error', err);
-    })
+        logger.warn('Deleting message error: ', err);
+    });
 }
 
 export async function handleMessage(messageObj, user) {
     const messageText = messageObj.text;
     if(!messageText){
-        //TODO: error handler
-        console.log('Error');
+        logger.warn('No message found ', messageObj);
     }
 
     if(user){
         await prisma.user.update({
             where: {
-                username: user.username
+                chat: user.chat
             },
             data: {
                 lastMessage: messageText,
@@ -80,7 +81,7 @@ export async function handleMessage(messageObj, user) {
         }
     }
     catch(err){
-        console.log(err);
+        logger.warn('Error', err);
     }
 }
 
@@ -97,7 +98,7 @@ export async function handleCallbackMessage(callbackObj) {
         }
     }
     catch(err){
-        console.log(err);
+        logger.warn('Error', err);
     };
 }
 

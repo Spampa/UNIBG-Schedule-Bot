@@ -1,4 +1,5 @@
 import { handleMessage, handleCallbackMessage, sendMessage } from "./lib/telegram.js";
+import { logger } from "../utils/logger.js";
 
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -9,7 +10,6 @@ export async function handler(req) {
 
         if (body && body.message) {
             const messageObj = body.message;
-            console.log(`Message from ${messageObj.chat.id} ${messageObj.chat?.username} text: ${messageObj.text}`);
             let user = await prisma.user.findUnique({
                 where: {
                     chat: messageObj.chat.id
@@ -35,7 +35,7 @@ export async function handler(req) {
             const callbackObj = body.callback_query;
             const user = await prisma.user.findUnique({
                 where: {
-                    username: callbackObj.from.username
+                    chat: callbackObj.from.id
                 }
             });
             if (!user.isBanned) {
@@ -44,7 +44,7 @@ export async function handler(req) {
         }
     }
     catch (err) {
-        console.log(err);
+        logger.warn('Error to handle message: ', err);
     }
 }
 

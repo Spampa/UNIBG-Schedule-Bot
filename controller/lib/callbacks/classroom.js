@@ -9,7 +9,6 @@ export async function classroom(classroom) {
     const date = formatDate();
     const [hour, minutes] = formattedTime.substring(formattedTime.indexOf(" ")).split(":");
 
-    console.log(date, hour);
     const findClass = await prisma.schedule.findFirst({
         where: {
             date: date,

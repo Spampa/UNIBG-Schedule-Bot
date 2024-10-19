@@ -1,15 +1,17 @@
 import { PrismaClient } from '@prisma/client';
+import { logger } from '../../../utils/logger.js';
 const prisma = new PrismaClient();
 
 export async function year(data, callbackObj) {
     const courseId = data.substring(0, data.indexOf("/"));
     const annoId = data.substring(courseId.length + 1);
-    const username = callbackObj.from.username;
+    const chat = callbackObj.from.id;
 
+    let user;
     try{
-        await prisma.user.update({
+        user = await prisma.user.update({
             where: {
-                username
+                chat
             },
             data: {
                 courseId,
@@ -19,7 +21,7 @@ export async function year(data, callbackObj) {
         return { text: "🥳 Corso configurato correttamente!"}
     }
     catch(err){
-        console.log(err);
+        logger.warn('Error user configuration: ', {user, data, callbackObj});
         return { text: '⚠️ Errore nella configurazione\nRiprova /start'}
     }
 }

@@ -8,13 +8,13 @@ export async function start(messageObj){
             chat: messageObj.chat.id
         },
         update: {
-            username: messageObj.chat.username,
+            username: messageObj.chat?.username || null,
             time: new Date().toISOString(),
             lastMessage: '/start',
         },
         create: {
             chat: messageObj.chat.id,
-            username: messageObj.chat.username,
+            username: messageObj.chat?.username || null,
             time: new Date().toISOString(),
             lastMessage: '/start',
         }
